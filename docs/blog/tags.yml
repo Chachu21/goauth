@@ -17,3 +17,69 @@ hola:
   label: Hola
   permalink: /hola
   description: Hola tag description
+
+# GoAuth specific tags
+go:
+  label: Go
+  permalink: /go
+  description: Go programming language related content
+
+authentication:
+  label: Authentication
+  permalink: /authentication
+  description: Authentication and security related content
+
+security:
+  label: Security
+  permalink: /security
+  description: Security best practices and guidelines
+
+jwt:
+  label: JWT
+  permalink: /jwt
+  description: JSON Web Token related content
+
+oauth:
+  label: OAuth
+  permalink: /oauth
+  description: OAuth protocol and implementation
+
+performance:
+  label: Performance
+  permalink: /performance
+  description: Performance optimization and benchmarking
+
+benchmarks:
+  label: Benchmarks
+  permalink: /benchmarks
+  description: Performance benchmarks and comparisons
+
+best-practices:
+  label: Best Practices
+  permalink: /best-practices
+  description: Development best practices and guidelines
+
+announcement:
+  label: Announcement
+  permalink: /announcement
+  description: Important announcements and updates
+
+welcome:
+  label: Welcome
+  permalink: /welcome
+  description: Welcome and introduction content
+
+two-factor:
+  label: Two-Factor Authentication
+  permalink: /two-factor
+  description: Two-factor authentication implementation
+
+rate-limiting:
+  label: Rate Limiting
+  permalink: /rate-limiting
+  description: Rate limiting and throttling features
+
+recaptcha:
+  label: reCAPTCHA
+  permalink: /recaptcha
+  description: reCAPTCHA integration and usage

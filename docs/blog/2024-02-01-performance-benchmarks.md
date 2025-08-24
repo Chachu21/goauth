@@ -1,6 +1,6 @@
 ---
 slug: goauth-performance-benchmarks
-title: GoAuth Performance Benchmarks: How Fast Can You Go?
+title: "GoAuth Performance Benchmarks: How Fast Can You Go?"
 authors: [goauth-team]
 tags: [performance, benchmarks, go, authentication]
 ---
@@ -29,7 +29,7 @@ package benchmarks
 import (
     "testing"
     "time"
-    
+
     "github.com/your-org/goauth"
     "github.com/golang-jwt/jwt/v5"
 )
@@ -39,12 +39,12 @@ func BenchmarkGoAuthJWTGeneration(b *testing.B) {
         Algorithm: "RS256",
         Issuer:    "benchmark-test",
     })
-    
+
     claims := map[string]interface{}{
         "user_id": "benchmark-user",
         "exp":     time.Now().Add(time.Hour).Unix(),
     }
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         _, err := auth.GenerateJWT(claims)
@@ -59,7 +59,7 @@ func BenchmarkStandardJWTGeneration(b *testing.B) {
         "user_id": "benchmark-user",
         "exp":     time.Now().Add(time.Hour).Unix(),
     }
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -73,11 +73,11 @@ func BenchmarkStandardJWTGeneration(b *testing.B) {
 
 ### Results: JWT Generation
 
-| Library | Operations/sec | Memory/op | Allocations/op |
-|---------|----------------|-----------|----------------|
-| **GoAuth** | **45,678** | **2.1 KB** | **12** |
-| Standard JWT | 38,945 | 2.8 KB | 18 |
-| Improvement | **+17.3%** | **-25%** | **-33.3%** |
+| Library      | Operations/sec | Memory/op  | Allocations/op |
+| ------------ | -------------- | ---------- | -------------- |
+| **GoAuth**   | **45,678**     | **2.1 KB** | **12**         |
+| Standard JWT | 38,945         | 2.8 KB     | 18             |
+| Improvement  | **+17.3%**     | **-25%**   | **-33.3%**     |
 
 ## JWT Validation Performance
 
@@ -89,9 +89,9 @@ func BenchmarkGoAuthJWTValidation(b *testing.B) {
         Algorithm: "RS256",
         Issuer:    "benchmark-test",
     })
-    
+
     token, _ := auth.GenerateJWT(claims)
-    
+
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
         _, err := auth.ValidateJWT(token)
@@ -104,11 +104,11 @@ func BenchmarkGoAuthJWTValidation(b *testing.B) {
 
 ### Results: JWT Validation
 
-| Library | Operations/sec | Memory/op | Allocations/op |
-|---------|----------------|-----------|----------------|
-| **GoAuth** | **52,341** | **1.8 KB** | **8** |
-| Standard JWT | 41,567 | 2.4 KB | 15 |
-| Improvement | **+25.9%** | **-25%** | **-46.7%** |
+| Library      | Operations/sec | Memory/op  | Allocations/op |
+| ------------ | -------------- | ---------- | -------------- |
+| **GoAuth**   | **52,341**     | **1.8 KB** | **8**          |
+| Standard JWT | 41,567         | 2.4 KB     | 15             |
+| Improvement  | **+25.9%**     | **-25%**   | **-46.7%**     |
 
 ## Concurrent Request Handling
 
@@ -120,7 +120,7 @@ func BenchmarkConcurrentRequests(b *testing.B) {
         Algorithm: "RS256",
         Issuer:    "benchmark-test",
     })
-    
+
     b.ResetTimer()
     b.RunParallel(func(pb *testing.PB) {
         for pb.Next() {
@@ -128,12 +128,12 @@ func BenchmarkConcurrentRequests(b *testing.B) {
                 "user_id": "user-" + strconv.Itoa(rand.Intn(1000)),
                 "exp":     time.Now().Add(time.Hour).Unix(),
             }
-            
+
             token, err := auth.GenerateJWT(claims)
             if err != nil {
                 b.Fatal(err)
             }
-            
+
             _, err = auth.ValidateJWT(token)
             if err != nil {
                 b.Fatal(err)
@@ -146,11 +146,11 @@ func BenchmarkConcurrentRequests(b *testing.B) {
 ### Results: Concurrent Performance
 
 | Concurrency Level | GoAuth (req/sec) | Standard JWT (req/sec) | Improvement |
-|-------------------|-------------------|------------------------|-------------|
-| 1 | 45,678 | 38,945 | +17.3% |
-| 4 | 178,234 | 151,892 | +17.4% |
-| 8 | 342,567 | 289,456 | +18.3% |
-| 16 | 612,890 | 498,234 | +23.0% |
+| ----------------- | ---------------- | ---------------------- | ----------- |
+| 1                 | 45,678           | 38,945                 | +17.3%      |
+| 4                 | 178,234          | 151,892                | +17.4%      |
+| 8                 | 342,567          | 289,456                | +18.3%      |
+| 16                | 612,890          | 498,234                | +23.0%      |
 
 ## Memory Usage Analysis
 
@@ -161,38 +161,38 @@ func BenchmarkMemoryUsage(b *testing.B) {
     var m runtime.MemStats
     runtime.ReadMemStats(&m)
     baseline := m.Alloc
-    
+
     auth := goauth.New(&goauth.Config{
         Algorithm: "RS256",
         Issuer:    "benchmark-test",
     })
-    
+
     for i := 0; i < 10000; i++ {
         claims := map[string]interface{}{
             "user_id": "user-" + strconv.Itoa(i),
             "exp":     time.Now().Add(time.Hour).Unix(),
         }
-        
+
         _, err := auth.GenerateJWT(claims)
         if err != nil {
             b.Fatal(err)
         }
     }
-    
+
     runtime.ReadMemStats(&m)
     totalMemory := m.Alloc - baseline
-    
+
     b.ReportMetric(float64(totalMemory)/10000, "bytes/op")
 }
 ```
 
 ### Memory Efficiency Results
 
-| Metric | GoAuth | Standard JWT | Improvement |
-|--------|--------|--------------|-------------|
-| **Peak Memory** | **45.2 MB** | **62.8 MB** | **-28.0%** |
-| **Memory/Operation** | **4.5 KB** | **6.3 KB** | **-28.6%** |
-| **GC Pressure** | **Low** | **Medium** | **Better** |
+| Metric               | GoAuth      | Standard JWT | Improvement |
+| -------------------- | ----------- | ------------ | ----------- |
+| **Peak Memory**      | **45.2 MB** | **62.8 MB**  | **-28.0%**  |
+| **Memory/Operation** | **4.5 KB**  | **6.3 KB**   | **-28.6%**  |
+| **GC Pressure**      | **Low**     | **Medium**   | **Better**  |
 
 ## Real-World Load Testing
 
@@ -204,41 +204,41 @@ func BenchmarkHTTPServer(b *testing.B) {
         Algorithm: "RS256",
         Issuer:    "benchmark-test",
     })
-    
+
     server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         token := r.Header.Get("Authorization")
         if token == "" {
             http.Error(w, "Unauthorized", http.StatusUnauthorized)
             return
         }
-        
+
         claims, err := auth.ValidateJWT(token)
         if err != nil {
             http.Error(w, "Invalid token", http.StatusUnauthorized)
             return
         }
-        
+
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(claims)
     }))
     defer server.Close()
-    
+
     client := &http.Client{}
-    
+
     b.ResetTimer()
     b.RunParallel(func(pb *testing.PB) {
         for pb.Next() {
             token, _ := auth.GenerateJWT(claims)
-            
+
             req, _ := http.NewRequest("GET", server.URL+"/api/user", nil)
             req.Header.Set("Authorization", token)
-            
+
             resp, err := client.Do(req)
             if err != nil {
                 b.Fatal(err)
             }
             resp.Body.Close()
-            
+
             if resp.StatusCode != http.StatusOK {
                 b.Fatal("unexpected status:", resp.StatusCode)
             }
@@ -249,12 +249,12 @@ func BenchmarkHTTPServer(b *testing.B) {
 
 ### HTTP Server Performance
 
-| Metric | GoAuth | Standard JWT | Improvement |
-|--------|--------|--------------|-------------|
-| **Requests/sec** | **89,456** | **67,234** | **+33.1%** |
-| **Latency (p50)** | **2.1ms** | **2.8ms** | **-25.0%** |
-| **Latency (p95)** | **4.2ms** | **5.6ms** | **-25.0%** |
-| **Latency (p99)** | **6.8ms** | **9.1ms** | **-25.3%** |
+| Metric            | GoAuth     | Standard JWT | Improvement |
+| ----------------- | ---------- | ------------ | ----------- |
+| **Requests/sec**  | **89,456** | **67,234**   | **+33.1%**  |
+| **Latency (p50)** | **2.1ms**  | **2.8ms**    | **-25.0%**  |
+| **Latency (p95)** | **4.2ms**  | **5.6ms**    | **-25.0%**  |
+| **Latency (p99)** | **6.8ms**  | **9.1ms**    | **-25.3%**  |
 
 ## Performance Optimization Techniques
 
@@ -279,12 +279,12 @@ func (a *Auth) GenerateJWT(claims map[string]interface{}) (string, error) {
         }
         claimsPool.Put(pooledClaims)
     }()
-    
+
     // Copy claims to pooled map
     for k, v := range claims {
         pooledClaims[k] = v
     }
-    
+
     // Use pooled claims for JWT generation
     return a.generateJWTInternal(pooledClaims)
 }
@@ -330,22 +330,26 @@ type cachedValidation struct {
 Based on our benchmarks, here are recommendations for different scale requirements:
 
 ### Small Scale (< 1K req/sec)
+
 - Use GoAuth with default settings
 - Single instance deployment
 - Expected latency: < 5ms
 
 ### Medium Scale (1K - 10K req/sec)
+
 - Use GoAuth with connection pooling
 - Consider horizontal scaling
 - Expected latency: < 10ms
 
 ### Large Scale (10K - 100K req/sec)
+
 - Use GoAuth with optimized configuration
 - Implement load balancing
 - Use Redis for session storage
 - Expected latency: < 20ms
 
 ### Enterprise Scale (100K+ req/sec)
+
 - Use GoAuth with custom optimizations
 - Implement microservices architecture
 - Use dedicated authentication services
@@ -368,4 +372,4 @@ Ready to experience these performance improvements? Check out our [Getting Start
 
 ---
 
-*For more performance insights and optimization tips, follow our blog and join our community discussions on GitHub.* 
+_For more performance insights and optimization tips, follow our blog and join our community discussions on GitHub._
